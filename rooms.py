@@ -81,7 +81,7 @@ class room:
 
 
 class Person:
-    def __init__(self, room, infected):
+    def __init__(self, room, infected = False):
         #self.status = random.choice(["v", "i", "c", "d"])
         if infected:
             self.status = "i"
@@ -90,13 +90,20 @@ class Person:
             self.status = "v"
             self.infected_days = 0
         self.room = room
-        self.position = self.new_random_pos()
+        self.position = [random.random()*self.room.actual_size[0], random.random()*self.room.actual_size[1]]
         self.radius = 2
 
         self.radius_anim_percentage = 1
         self.room.persons.append(self)
+        self.forward_chance = 0.5
+        self.direction = [random.random(),random.random()]#uniform distr is wahrscheinlich nicht gut
+        self.speed = 1
+
     def new_random_pos(self):
-        return [0.1+np.random.random()*(self.room.actual_size[0]-0.2), 0.1+np.random.random()*(self.room.actual_size[1]-0.2)]
+        if random.random() > self.forward_chance:
+            self.direction = [random.random(),random.random()]
+        return [self.position[0]+random.random()*self.speed*self.direction[0],self.position[1]+random.random()*self.speed*self.direction[1]]
+        #return [0.1+np.random.random()*(self.room.actual_size[0]-0.2), 0.1+np.random.random()*(self.room.actual_size[1]-0.2)]
     def wiggle(self):
         factor = 1
         self.position[0] += np.random.random()*(factor)

@@ -10,11 +10,11 @@ from rooms import *
 
 
 class scenario:
-    def __init__(self, infection_rate = 0.2, number_infected = 1, deathrate = 0.05, max_infected_time = 7):
+    def __init__(self, infection_rate = 0.2, number_infected = 1, deathrate = 0.1, max_infected_time = 7):
         self.number_of_rooms = 5
         self.rooms = []
         self.opt_arangement = 0,0
-        self.shape = (20,20)
+        self.shape = (20,30)
         self.members = 100
         self.infection_rate = infection_rate
         self.number_infected = number_infected
@@ -32,9 +32,9 @@ class scenario:
             the_infected = random.sample(range(self.members), self.number_infected)
             for m in range(self.members):
                 if m in the_infected:
-                    person = Person(newroom, True)
+                    person = Person(newroom, infected = True)
                 else:
-                    person = Person(newroom, False)
+                    person = Person(newroom)
                 person.register()
             self.rooms.append(newroom)
     def draw_all_rooms(self):
@@ -45,8 +45,8 @@ class scenario:
             room.clear_room()
             room.compute_scale(fig)
             for person in room.persons:
-                #person.position = person.new_random_pos()
-                person.wiggle()
+                person.position = person.new_random_pos()
+                #person.wiggle()
                 person.register()
             room.draw()
             #fig.canvas.restore_region(room.axbackground)
@@ -59,11 +59,12 @@ class scenario:
             for prsn in space.persons:
                 if prsn.status == "i":
                     for otherprsn in space.persons:
-                        if otherprsn.status != "i":
+                        if otherprsn.status != "i" and prsn is not otherprsn:
                             distance = np.linalg.norm(np.array(prsn.position) - np.array(otherprsn.position))
                             if distance <= prsn.radius or distance <= otherprsn.radius:
                                 if random.random() <= self.infection_rate:
                                     otherprsn.status = "i"
+                                    otherprsn.infected_days = 0
 
     def calculate_death(self):
         for space in self.rooms:
